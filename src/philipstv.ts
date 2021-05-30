@@ -190,7 +190,7 @@ export class PhilipsTV {
     async getTVChannels() {
         const url = 'https://' + this.ip + ':1926/6/channeldb/tv/channelLists/all';
         const result = await get(url, '', this.auth!);
-        return JSON.parse(result)
+        return JSON.parse(result);
     }
 
     async getVolume() {
@@ -239,6 +239,17 @@ export class PhilipsTV {
         while (counter < 100) {
             try {
                 await this.setPowerState(true);
+                return;
+            } catch {
+                await this.wakeOnLan();
+            }
+        }
+    }
+
+    async wakeUntilAPIReady(counter = 0) {
+        while (counter < 100) {
+            try {
+                await this.getPowerState();
                 return;
             } catch {
                 await this.wakeOnLan();
