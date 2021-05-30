@@ -1,6 +1,6 @@
 import request from 'request';
 
-export interface RequestAuth {
+interface Authentication {
     user: string;
     pass: string;
     sendImmediately: boolean;
@@ -13,10 +13,10 @@ export interface RequestPayload {
     rejectUnauthorized: boolean;
     timeout: number;
     followAllRedirects: boolean;
-    auth?: RequestAuth;
+    auth?: Authentication;
 }
 
-export async function doRequest(method: string, url: string, body = '', auth?: RequestAuth) : Promise<string> {
+export async function doRequest(method: string, url: string, body = '', auth?: Authentication) : Promise<string> {
     return new Promise(function (this, resolve, reject) {
         const payload : RequestPayload = { 
             url: url,
@@ -41,10 +41,10 @@ export async function doRequest(method: string, url: string, body = '', auth?: R
     });
 }
 
-export async function get(url: string, body = '', auth?: RequestAuth) : Promise<string> {
+export async function get(url: string, body = '', auth?: Authentication) : Promise<string> {
     return doRequest('GET', url, body, auth);
 }
 
-export async function post(url: string, body = '', auth?: RequestAuth) : Promise<string> {
+export async function post(url: string, body = '', auth?: Authentication) : Promise<string> {
     return doRequest('POST', url, body, auth);
 }
