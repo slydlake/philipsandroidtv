@@ -1,6 +1,6 @@
 function makeDeviceId(length: number) {
-    let result : Array<string> = [];
-    const characters : string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const result : Array<string> = [];
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const charactersLength : number = characters.length;
     for (let i = 0; i < length; i++) {
         const random = Math.floor(Math.random() * charactersLength);

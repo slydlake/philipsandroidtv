@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 
-const secret_key: string = 'JCqdN5AcnAHgJYseUn7ER5k3qgtemfUvMRghQpTfTZq7Cvv8EPQPqfz6dDxPQPSu4gKFPWkJGw32zyASgJkHwCjU';
+const secret_key = 'JCqdN5AcnAHgJYseUn7ER5k3qgtemfUvMRghQpTfTZq7Cvv8EPQPqfz6dDxPQPSu4gKFPWkJGw32zyASgJkHwCjU';
 
 export function prepareAuthenticationRequestPayload(timestamp: string, pin: string, apiUser: string, apiPass: string) {
     const hash = crypto
