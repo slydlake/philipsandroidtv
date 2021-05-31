@@ -1,10 +1,5 @@
 import request from 'request';
-
-interface Authentication {
-    user: string;
-    pass: string;
-    sendImmediately: boolean;
-}
+import { Authentication } from './philipstv';
 
 export interface RequestPayload {
     url: string;
@@ -12,6 +7,7 @@ export interface RequestPayload {
     body: string;
     rejectUnauthorized: boolean;
     timeout: number;
+    forever: boolean;
     followAllRedirects: boolean;
     auth?: Authentication;
 }
@@ -23,7 +19,8 @@ export async function doRequest(method: string, url: string, body = '', auth?: A
             method: method,
             body: body,
             rejectUnauthorized: false,
-            timeout: 1000,
+            timeout: 5000,
+            forever: true,
             followAllRedirects: true,
         };
 
@@ -34,8 +31,12 @@ export async function doRequest(method: string, url: string, body = '', auth?: A
         request(payload, function (error, res, body) {
             if (!error && res.statusCode === 200) {
                 resolve(body);
-            } else {
+            } else if (error) {
+                console.log(error);
                 reject(error);
+            } else {
+                console.log(res);
+                reject(res);
             }
         });    
     });
