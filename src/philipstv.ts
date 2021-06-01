@@ -235,6 +235,18 @@ export class PhilipsTV {
         return JSON.parse(result);   
     }
 
+    async launchApplication(application: Record<string, string>) {
+        const url = 'https://' + this.ip + ':1926/6/activities/launch';
+        const result = await post(url, JSON.stringify(application), this.auth!);
+        return JSON.parse(result);   
+    }
+
+    async launchTVChannel(application: Record<string, string>) {
+        const url = 'https://' + this.ip + ':1926/6/activities/tv';
+        const result = await post(url, JSON.stringify(application), this.auth!);
+        return JSON.parse(result); 
+    }
+
     async turnOn(counter = 0) {
         while (counter < 100) {
             try {
