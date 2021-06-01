@@ -207,7 +207,7 @@ export class PhilipsTV {
 
     async getVolumePercentage() {
         const result = await this.getVolume();
-        return Math.floor(Number(result.current) * (100 / (result.volumeMax - result.volumeMin)));
+        return Math.floor(Number(result.current) * (100 / (result.max - result.min)));
     }
 
     async setVolume(value: number) {
