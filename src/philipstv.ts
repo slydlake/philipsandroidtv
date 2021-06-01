@@ -136,12 +136,14 @@ export class PhilipsTV {
     }
 
     async wakeOnLan() {
-        wol.wake(this.mac, { address: '255.255.255.255' }, function (this, error) {
-            if (error) {
-                this.warn('wakeOnLan: error: ' + error);
-            }
-        }.bind(this));
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        if (this.mac) {
+            wol.wake(this.mac, { address: '255.255.255.255' }, function (this, error) {
+                if (error) {
+                    this.warn('wakeOnLan: error: ' + error);
+                }
+            }.bind(this));
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
     }
 
     async getPowerState() {
