@@ -11,6 +11,11 @@ const validate = {
     pin: /^[0-9]{4}$/,
 };
 
+export interface PhilipsTVConfig {
+    apiVersion: number;
+    wakeUntilAPIReadyCounter: number;
+}
+
 export interface Authentication {
     user: string;
     pass: string;
@@ -64,13 +69,13 @@ export class PhilipsTV {
     private ip: string;
     private mac?: string;
     private auth?: Authentication;
+    private config: PhilipsTVConfig;
     private volume?: number;
     private volumeMin = 0;
     private volumeMax = 0;
-    private lastPlayPause = 'Pause';
     public tvChannels: PhilipsTVChannels;
     
-    constructor(ip: string, mac?: string, auth?: Authentication) {
+    constructor(ip: string, mac?: string, auth?: Authentication, config?: PhilipsTVConfig) {
         if (!validate.ip.test(ip)) {
             throw 'IP is not an IP Address!';
         }
@@ -85,18 +90,27 @@ export class PhilipsTV {
 
         this.auth = auth;
 
+        if (config) {
+            this.config = config;
+        } else {
+            this.config = {
+                wakeUntilAPIReadyCounter: 100,
+                apiVersion: 6,
+            };
+        }
+
         this.tvChannels = new PhilipsTVChannels;
     }
 
     async info() : Promise<Record<string, unknown>> {
-        const url = 'http://' + this.ip + ':1925/6/system';
+        const url = 'http://' + this.ip + ':1925/' + String(this.config.apiVersion) + '/system';
         const result = await get(url);
         const response = JSON.parse(result);
         return response;
     }
 
     async requestPair() : Promise<Record<string, unknown>> {
-        const pair_url = 'https://' + this.ip + ':1926/6/pair/request';
+        const pair_url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion) + '/pair/request';
         const pair_payload = createUniquePairRequestPayload();
         const pair_result = await post(pair_url, JSON.stringify(pair_payload));
         const pair_response = JSON.parse(pair_result);
@@ -111,7 +125,7 @@ export class PhilipsTV {
     }
 
     async authorizePair(timestamp: string, pin: string) : Promise<Record<string, unknown>> {
-        const auth_url = 'https://' + this.ip + ':1926/6/pair/grant';
+        const auth_url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion) + '/pair/grant';
         const auth_payload = prepareAuthenticationRequestPayload(
             timestamp,
             pin,
@@ -147,14 +161,14 @@ export class PhilipsTV {
     }
 
     async getPowerState() {
-        const url = 'https://' + this.ip + ':1926/6/powerstate';
+        const url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion) + 'powerstate';
         // eslint-disable-next-line quotes
         const result = await get(url, '', this.auth!);
         return JSON.parse(result);
     }
 
     async setPowerState(on: boolean) {
-        const url = 'https://' + this.ip + ':1926/6/powerstate';
+        const url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion) + '/powerstate';
         let request_body = { 'powerstate': 'Standby'};
 
         if (on) {
@@ -166,37 +180,37 @@ export class PhilipsTV {
     }
 
     async getApplications() {
-        const url = 'https://' + this.ip + ':1926/6/applications';
+        const url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion) + '/applications';
         const result = await get(url, '', this.auth!);
         return JSON.parse(result);
     }
 
     async getCurrentActivity() {
-        const url = 'https://' + this.ip + ':1926/6/activities/current';
+        const url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion) + '/activities/current';
         const result = await get(url, '', this.auth!);
         return JSON.parse(result);
     }
 
     async getCurrentTVChannel() {
-        const url = 'https://' + this.ip + ':1926/6/activities/tv';
+        const url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion) + '/activities/tv';
         const result = await get(url, '', this.auth!);
         return JSON.parse(result);
     }
 
     async getFavoriteList() {
-        const url = 'https://' + this.ip + ':1926/6/channeldb/tv/favoriteLists/1';
+        const url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion) + '/channeldb/tv/favoriteLists/1';
         const result = await get(url, '', this.auth!);
         return JSON.parse(result);       
     }
 
     async getTVChannels() {
-        const url = 'https://' + this.ip + ':1926/6/channeldb/tv/channelLists/all';
+        const url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion) + '/channeldb/tv/channelLists/all';
         const result = await get(url, '', this.auth!);
         return JSON.parse(result);
     }
 
     async getVolume() {
-        const url = 'https://' + this.ip + ':1926/6/audio/volume';
+        const url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion) + '/audio/volume';
         const result = await get(url, '', this.auth!);
         const response = JSON.parse(result);    
         this.volume = response.current;
@@ -211,7 +225,7 @@ export class PhilipsTV {
     }
 
     async setVolume(value: number) {
-        const url = 'https://' + this.ip + ':1926/6/audio/volume';
+        const url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion) + '/audio/volume';
         const request_body = { 'muted': false, 'current': value };
         this.volume = value;
         const result = await post(url, JSON.stringify(request_body), this.auth!);
@@ -224,33 +238,33 @@ export class PhilipsTV {
     }
 
     async setMute(muted: boolean) {
-        const url = 'https://' + this.ip + ':1926/6/audio/volume';
+        const url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion) + '/audio/volume';
         const request_body = { 'muted': muted, 'current': this.volume };
         const result = await post(url, JSON.stringify(request_body), this.auth!);
         return JSON.parse(result);    
     }
 
     async sendKey(key: string) {
-        const url = 'https://' + this.ip + ':1926/6/input/key';
+        const url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion) + '/input/key';
         const request_body = { 'key': key };
         const result = await post(url, JSON.stringify(request_body), this.auth!);
         return JSON.parse(result);   
     }
 
     async launchApplication(application: Record<string, string>) {
-        const url = 'https://' + this.ip + ':1926/6/activities/launch';
+        const url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion) + '/activities/launch';
         const result = await post(url, JSON.stringify(application), this.auth!);
         return JSON.parse(result);   
     }
 
     async launchTVChannel(application: Record<string, string>) {
-        const url = 'https://' + this.ip + ':1926/6/activities/tv';
+        const url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion) + '/activities/tv';
         const result = await post(url, JSON.stringify(application), this.auth!);
         return JSON.parse(result); 
     }
 
     async turnOn(counter = 0) {
-        while (counter < 100) {
+        while (counter < this.config.wakeUntilAPIReadyCounter) {
             try {
                 await this.setPowerState(true);
                 return;
@@ -261,7 +275,7 @@ export class PhilipsTV {
     }
 
     async wakeUntilAPIReady(counter = 0) {
-        while (counter < 100) {
+        while (counter < this.config.wakeUntilAPIReadyCounter) {
             try {
                 const result = await this.getPowerState();
                 return result;
