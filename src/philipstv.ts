@@ -96,7 +96,6 @@ export class PhilipsTV {
             this.config = {
                 wakeUntilAPIReadyCounter: 100,
                 apiVersion: 6,
-                favoriteListId: 1,
             };
         }
 
