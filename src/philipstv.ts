@@ -14,6 +14,7 @@ const validate = {
 export interface PhilipsTVConfig {
     apiVersion: number;
     wakeUntilAPIReadyCounter: number;
+    favoriteListId: number;
 }
 
 export interface Authentication {
@@ -96,6 +97,7 @@ export class PhilipsTV {
             this.config = {
                 wakeUntilAPIReadyCounter: 100,
                 apiVersion: 6,
+                favoriteListId: 1,
             };
         }
 
@@ -198,7 +200,8 @@ export class PhilipsTV {
     }
 
     async getFavoriteList() {
-        const url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion) + '/channeldb/tv/favoriteLists/1';
+        const url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion)
+            + '/channeldb/tv/favoriteLists/' + String(this.config.favoriteListId);
         const result = await get(url, '', this.auth!);
         return JSON.parse(result);       
     }
