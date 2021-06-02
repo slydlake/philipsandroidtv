@@ -161,7 +161,7 @@ export class PhilipsTV {
     }
 
     async getPowerState() {
-        const url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion) + 'powerstate';
+        const url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion) + '/powerstate';
         // eslint-disable-next-line quotes
         const result = await get(url, '', this.auth!);
         return JSON.parse(result);
