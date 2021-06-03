@@ -1,7 +1,7 @@
 {
     "name": "@konradknitter/philipsandroidtv",
     "description": "Node.js module for Philips Andorid TV",
-    "version": "0.6.0",
+    "version": "1.0.0",
     "keywords": [
         "philips",
         "android",
