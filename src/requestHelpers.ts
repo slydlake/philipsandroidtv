@@ -28,17 +28,22 @@ export async function doRequest(method: string, url: string, body = '', auth?: A
             payload.auth = auth;
         }
 
-        request(payload, function (error, res, body) {
-            if (!error && res.statusCode === 200) {
-                resolve(body);
-            } else if (error) {
-                console.log(error);
-                reject(error);
-            } else {
-                console.log(res);
-                reject(res);
-            }
-        });    
+        try {
+            request(payload, function (error, res, body) {
+                if (!error && res.statusCode === 200) {
+                    resolve(body);
+                } else if (error) {
+                    console.log(error);
+                    reject(error);
+                } else {
+                    console.log(res);
+                    reject(res);
+                }
+            });  
+        } catch {
+            reject('Request module failure');
+        }
+  
     });
 }
 
