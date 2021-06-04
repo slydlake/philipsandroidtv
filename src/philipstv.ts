@@ -175,8 +175,8 @@ export class PhilipsTV {
             request_body = { 'powerstate': 'On' };
         } 
 
-        const result = await post(url, JSON.stringify(request_body), this.auth!);
-        return JSON.parse(result);
+        await post(url, JSON.stringify(request_body), this.auth!);
+        return;
     }
 
     async getApplications() {
