@@ -267,8 +267,7 @@ export class PhilipsTV {
     async turnOn(counter = 0) {
         while (counter < this.config.wakeUntilAPIReadyCounter) {
             try {
-                const result = await this.setPowerState(true);
-                return result;
+                await this.setPowerState(true);
             } catch {
                 await this.wakeOnLan();
             }
