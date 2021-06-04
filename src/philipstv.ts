@@ -267,6 +267,9 @@ export class PhilipsTV {
     async turnOn(counter = 0) {
         while (counter < this.config.wakeUntilAPIReadyCounter) {
             counter++;
+            if ((counter % 10) === 0) {
+                console.log('turnOn: try ' + counter);
+            }
             try {
                 await this.setPowerState(true);
                 return;
@@ -279,6 +282,9 @@ export class PhilipsTV {
     async wakeUntilAPIReady(counter = 0) {
         while (counter < this.config.wakeUntilAPIReadyCounter) {
             counter++;
+            if ((counter % 10) === 0) {
+                console.log('wakeUntilAPIReady: try ' + counter);
+            }
             try {
                 const result = await this.getPowerState();
                 return result;
