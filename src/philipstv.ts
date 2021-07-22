@@ -14,6 +14,7 @@ const validate = {
 export interface PhilipsTVConfig {
     apiVersion: number;
     wakeUntilAPIReadyCounter: number;
+    broadcastIP: string;
 }
 
 export interface Authentication {
@@ -96,6 +97,7 @@ export class PhilipsTV {
             this.config = {
                 wakeUntilAPIReadyCounter: 100,
                 apiVersion: 6,
+                broadcastIP: '255.255.255.255',
             };
         }
 
@@ -151,7 +153,7 @@ export class PhilipsTV {
 
     async wakeOnLan() {
         if (this.mac) {
-            wol.wake(this.mac, { address: '255.255.255.255' }, function (this, error) {
+            wol.wake(this.mac, { address: this.config.broadcastIP }, function (this, error) {
                 if (error) {
                     console.log('wakeOnLan: error: ' + error);
                 }
