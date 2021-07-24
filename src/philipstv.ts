@@ -15,6 +15,8 @@ export interface PhilipsTVConfig {
     apiVersion: number;
     wakeUntilAPIReadyCounter: number;
     broadcastIP: string;
+    wakeOnLanRequests: number;
+    wakeOnLanTimeout: number;
 }
 
 export interface Authentication {
@@ -98,6 +100,8 @@ export class PhilipsTV {
                 wakeUntilAPIReadyCounter: 100,
                 apiVersion: 6,
                 broadcastIP: '255.255.255.255',
+                wakeOnLanRequests: 1,
+                wakeOnLanTimeout: 1000,
             };
         }
 
@@ -153,12 +157,14 @@ export class PhilipsTV {
 
     async wakeOnLan() {
         if (this.mac) {
-            wol.wake(this.mac, { address: this.config.broadcastIP }, function (this, error) {
-                if (error) {
-                    console.log('wakeOnLan: error: ' + error);
-                }
-            }.bind(this));
-            return await new Promise(resolve => setTimeout(resolve, 1000));
+            for (let i = 0; i < this.config.wakeOnLanRequests; i++) {
+                wol.wake(this.mac, { address: this.config.broadcastIP }, function (this, error) {
+                    if (error) {
+                        console.log('wakeOnLan: error: ' + error);
+                    }
+                }.bind(this));
+            }
+            return await new Promise(resolve => setTimeout(resolve, this.config.wakeOnLanTimeout));
         }
     }
 
