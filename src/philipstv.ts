@@ -167,6 +167,7 @@ export class PhilipsTV {
             return await new Promise(resolve => setTimeout(resolve, this.config.wakeOnLanTimeout));
         }
     }
+
     async getPowerStateWithTimeout() {
         const url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion) + '/powerstate';
     
@@ -175,9 +176,9 @@ export class PhilipsTV {
         
         try {
             const result = await Promise.race([request, timeout]);
-            return JSON.parse(result);
+            return JSON.parse(result as string);
         } catch (error) {
-            console.log("Fehler oder Timeout beim Abrufen des PowerState:", error);
+            console.log('Fehler oder Timeout beim Abrufen des PowerState:', error);
             return { powerstate: 'Off' };
         }
     }
