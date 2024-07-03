@@ -167,6 +167,20 @@ export class PhilipsTV {
             return await new Promise(resolve => setTimeout(resolve, this.config.wakeOnLanTimeout));
         }
     }
+    async getPowerStateWithTimeout() {
+        const url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion) + '/powerstate';
+    
+        const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), this.config.wakeOnLanTimeout));
+        const request = get(url, '', this.auth!);
+        
+        try {
+            const result = await Promise.race([request, timeout]);
+            return JSON.parse(result);
+        } catch (error) {
+            console.log("Fehler oder Timeout beim Abrufen des PowerState:", error);
+            return { powerstate: 'Off' };
+        }
+    }
 
     async getPowerState() {
         const url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion) + '/powerstate';
@@ -181,6 +195,47 @@ export class PhilipsTV {
 
         if (on) {
             request_body = { 'powerstate': 'On' };
+        } 
+
+        await post(url, JSON.stringify(request_body), this.auth!);
+        return;
+    }
+
+    async getAmbilightState() {
+        
+        const url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion) + '/ambilight/power';
+        // eslint-disable-next-line quotes
+        const result = await get(url, '', this.auth!);
+        return JSON.parse(result);
+    }
+
+    async setAmbilightState(on: boolean) {
+        const url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion) + '/ambilight/power';
+        let request_body = { 'power': 'Off'};
+
+        if (on) {
+            request_body = { 'power': 'On' };
+        } 
+
+        await post(url, JSON.stringify(request_body), this.auth!);
+        return;
+    }
+
+
+    async getAmbilightHueState() {
+        
+        const url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion) + '/HueLamp/power';
+        // eslint-disable-next-line quotes
+        const result = await get(url, '', this.auth!);
+        return JSON.parse(result);
+    }
+
+    async setAmbilightHueState(on: boolean) {
+        const url = 'https://' + this.ip + ':1926/' + String(this.config.apiVersion) + '/HueLamp/power';
+        let request_body = { 'power': 'Off'};
+
+        if (on) {
+            request_body = { 'power': 'On' };
         } 
 
         await post(url, JSON.stringify(request_body), this.auth!);
